@@ -6,7 +6,19 @@
   "action": {
     "default_popup": "index.html"
   },
-  "permissions": [],
+  "side_panel": {
+    "default_path": "src/sidePanel/index.html"
+  },
+  "commands": {
+    "open-side-panel": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+Y"
+      },
+      "description": "Open side panel"
+    }
+  },  
+  "omnibox": { "keyword" : "smac" },
+  "permissions": ["history", "tabs", "sidePanel", "storage", "contextMenus"],
     "background": {
     "service_worker": "src/background/background.ts",
     "type": "module",

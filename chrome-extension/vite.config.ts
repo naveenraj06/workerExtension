@@ -7,7 +7,7 @@ import {crx } from "@crxjs/vite-plugin";
 
 import manifestJson from "./manifest.json";
 
-const manifest = manifestJson;
+const manifest:any = manifestJson;
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -17,6 +17,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: './index.html',
+        sidepanel: './src/sidepanel/index.html',
       }
     }
   }
