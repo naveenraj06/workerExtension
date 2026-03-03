@@ -5,6 +5,10 @@
     "src": "../../../../../../../crx-manifest",
     "isEntry": true
   },
+  "_common-C007u44k.js": {
+    "file": "assets/common-C007u44k.js",
+    "name": "common"
+  },
   "_index-CQFZbpCx.js": {
     "file": "assets/index-CQFZbpCx.js",
     "name": "index",
@@ -17,12 +21,13 @@
     "src": "_index-DQ3P1g1z.css"
   },
   "index.html": {
-    "file": "assets/main-BH8GlxsC.js",
+    "file": "assets/main-BkoJIUjN.js",
     "name": "main",
     "src": "index.html",
     "isEntry": true,
     "imports": [
-      "_index-CQFZbpCx.js"
+      "_index-CQFZbpCx.js",
+      "_common-C007u44k.js"
     ],
     "css": [
       "assets/main-BeKxpIKi.css"
@@ -36,10 +41,13 @@
     "src": "src/assets/react.svg"
   },
   "src/background/background.ts": {
-    "file": "assets/background.ts-DiPCWI1b.js",
+    "file": "assets/background.ts-COEK5AIm.js",
     "name": "background.ts",
     "src": "src/background/background.ts",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "_common-C007u44k.js"
+    ]
   },
   "src/sidePanel/index.html": {
     "file": "assets/sidepanel-D_0Mux9b.js",

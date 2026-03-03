@@ -1,21 +1,22 @@
 /// <reference types="chrome"/>
 
 console.log("Background script running...");
+import { removeLocalData, setLocalData } from "../utils/modules/common";
 
 import { sessionCallbacks } from "./session";
 
 chrome.runtime.onInstalled.addListener(({ reason }) => {
-console.log("Extension installed or updated. Reason:", reason);
+  console.log("Extension installed or updated. Reason:", reason);
   chrome.contextMenus.create({
     id: "openSidePanel",
     title: "Open side panel",
     contexts: ["all"],
   });
 
-chrome.bookmarks.getRecent(5, (bookmarks) => {
-  console.log("Recent bookmarks:", bookmarks);
-  chrome.storage.local.set({ recentBookmarks: bookmarks });
-});
+  chrome.bookmarks.getRecent(5, (bookmarks) => {
+    console.log("Recent bookmarks:", bookmarks);
+    chrome.storage.local.set({ recentBookmarks: bookmarks });
+  });
 });
 
 chrome.contextMenus.onClicked.addListener((info: any, tab: any) => {
@@ -29,10 +30,10 @@ chrome.contextMenus.onClicked.addListener((info: any, tab: any) => {
 sessionCallbacks();
 let panelStateByTab: Record<number, boolean> = {};
 
-chrome.commands.onCommand.addListener((command) => {
+chrome.commands.onCommand.addListener(async (command) => {
   if (command !== "open-side-panel") return;
 
-  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+  chrome.tabs.query({ active: true, currentWindow: true }, async (tabs) => {
     if (!tabs.length || tabs[0].id === undefined) return;
 
     const tabId = tabs[0].id;
@@ -45,6 +46,7 @@ chrome.commands.onCommand.addListener((command) => {
       });
 
       panelStateByTab[tabId] = false;
+      await removeLocalData("sidepanelActiveTab");
     } else {
       // Enable + Open side panel
       chrome.sidePanel.setOptions({
@@ -54,6 +56,7 @@ chrome.commands.onCommand.addListener((command) => {
       chrome.sidePanel.open({ tabId });
 
       panelStateByTab[tabId] = true;
+      await setLocalData("sidepanelActiveTab", { tabId });
     }
   });
 });
@@ -104,28 +107,33 @@ chrome.omnibox.onInputEntered.addListener(function (
 });
 
 const sidebarHelper = async (tabId: number) => {
-      const tab = await chrome.tabs.get(tabId);
-  if(!tab.url) return;
+  const tab = await chrome.tabs.get(tabId);
+  if (!tab.url) return;
   const tabUrl = new URL(tab.url);
-    if (tabUrl.hostname === "vessel-dev-int.smacerp.com") {
-        await chrome.sidePanel.setOptions({ enabled: true });
-        chrome.contextMenus.update("openSidePanel", { visible: true, enabled: true });
-    } else { 
-        await chrome.sidePanel.setOptions({ enabled:false });
-        chrome.contextMenus.update("openSidePanel", { visible: false, enabled: false });
-    }
-}
+  if (tabUrl.hostname === "vessel-dev-int.smacerp.com") {
+    await chrome.sidePanel.setOptions({ enabled: true });
+    chrome.contextMenus.update("openSidePanel", {
+      visible: true,
+      enabled: true,
+    });
+  } else {
+    await chrome.sidePanel.setOptions({ enabled: false });
+    chrome.contextMenus.update("openSidePanel", {
+      visible: false,
+      enabled: false,
+    });
+  }
+};
 
 chrome.tabs.onUpdated.addListener(async (tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") {
     console.log("Tab updated:", tab, tabId);
     // You can also check the URL or other properties of the tab here
   }
-    await sidebarHelper(tabId);
+  await sidebarHelper(tabId);
 });
 
 chrome.tabs.onActivated.addListener(async (activeInfo) => {
-    console.log("Tab activated:", activeInfo);
-    await sidebarHelper(activeInfo.tabId);
+  console.log("Tab activated:", activeInfo);
+  await sidebarHelper(activeInfo.tabId);
 });
-
