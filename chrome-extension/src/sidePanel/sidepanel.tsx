@@ -1,93 +1,227 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
+import "./sidepanel.css";
 
-type Message = {
-  id: string;
+type View = "chat" | "history";
+
+interface Message {
   role: "user" | "assistant";
   content: string;
-};
+}
 
-const SidePanel: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      role: "assistant",
-      content: "Hey 👋 I’m your extension assistant. How can I help you today?",
-    },
-  ]);
+interface Chat {
+  id: string;
+  title: string;
+  messages: Message[];
+}
+
+export default function SidePanelChatbot() {
+  const [view, setView] = useState<View>("chat");
+  const [chats, setChats] = useState<Chat[]>([]);
+  const [currentChatId, setCurrentChatId] = useState<string | null>(null);
   const [input, setInput] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [typing, setTyping] = useState(false);
+  const bottomRef = useRef<HTMLDivElement>(null);
 
-  const bottomRef = useRef<HTMLDivElement | null>(null);
+  const currentChat = chats.find((c) => c.id === currentChatId);
 
+  /* Initialize with one chat */
+  useEffect(() => {
+    if (chats.length === 0) {
+      const newChat = createNewChat();
+      setChats([newChat]);
+      setCurrentChatId(newChat.id);
+    }
+  }, []);
+
+  /* Auto scroll */
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [messages, loading]);
+  }, [currentChat?.messages, typing]);
 
-  const sendMessage = async () => {
-    if (!input.trim()) return;
+  const createNewChat = (): Chat => ({
+    id: Date.now().toString(),
+    title: "New Chat",
+    messages: [],
+  });
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input,
-    };
-
-    setMessages((prev) => [...prev, userMessage]);
-    setInput("");
-    setLoading(true);
-
-    // Simulated AI response
-    setTimeout(() => {
-      const botMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "This is a mock AI response. Replace with your API logic.",
-      };
-
-      setMessages((prev) => [...prev, botMessage]);
-      setLoading(false);
-    }, 1000);
+  const handleNewChat = () => {
+    const newChat = createNewChat();
+    setChats((prev) => [newChat, ...prev]);
+    setCurrentChatId(newChat.id);
+    setView("chat");
   };
 
-  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendMessage();
+  const handleSend = () => {
+    if (!input.trim() || !currentChat) return;
+
+    const userMessage: Message = { role: "user", content: input };
+
+    const updatedChats = chats.map((chat) =>
+      chat.id === currentChatId
+        ? {
+            ...chat,
+            title:
+              chat.messages.length === 0
+                ? input.slice(0, 24)
+                : chat.title,
+            messages: [...chat.messages, userMessage],
+          }
+        : chat
+    );
+
+    setChats(updatedChats);
+    setInput("");
+    simulateBotResponse();
+  };
+
+  const simulateBotResponse = () => {
+    setTyping(true);
+    setTimeout(() => {
+      const botMessage: Message = {
+        role: "assistant",
+        content: "This is a simulated AI response.",
+      };
+
+      setChats((prev) =>
+        prev.map((chat) =>
+          chat.id === currentChatId
+            ? {
+                ...chat,
+                messages: [...chat.messages, botMessage],
+              }
+            : chat
+        )
+      );
+
+      setTyping(false);
+    }, 900);
+  };
+
+  const deleteChat = (id: string) => {
+    const filtered = chats.filter((chat) => chat.id !== id);
+    setChats(filtered);
+
+    if (filtered.length > 0) {
+      setCurrentChatId(filtered[0].id);
+    } else {
+      const newChat = createNewChat();
+      setChats([newChat]);
+      setCurrentChatId(newChat.id);
     }
   };
 
   return (
     <div className="chat-wrapper">
+      {/* HEADER */}
       <div className="chat-header">
-        <div className="logo-dot" />
-        <span>Extension AI</span>
-      </div>
-
-      <div className="chat-body">
-        {messages.map((msg) => (
-          <div
-            key={msg.id}
-            className={`message ${msg.role === "user" ? "user" : "assistant"}`}
-          >
-            {msg.content}
+        {view === "history" ? (
+          <button className="icon-btn" onClick={() => setView("chat")}>
+            ←
+          </button>
+        ) : (
+          <div className="header-left">
+            <div className="logo-dot" />
+            <span className="header-title">Chrome AI</span>
           </div>
-        ))}
+        )}
 
-        {loading && <div className="message assistant typing">Typing...</div>}
-        <div ref={bottomRef} />
+        <div className="header-actions">
+          {view === "chat" && (
+            <>
+              <button
+                className="icon-btn"
+                onClick={() => setView("history")}
+              >
+                ☰
+              </button>
+              <button
+                className="icon-btn"
+                onClick={handleNewChat}
+              >
+                ＋
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
-      <div className="chat-footer">
-        <textarea
-          placeholder="Ask something..."
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-        />
-        <button onClick={sendMessage}>➤</button>
-      </div>
+      {/* BODY */}
+      {view === "chat" && (
+        <>
+          <div className="chat-body">
+            {currentChat?.messages.length === 0 && (
+              <div className="empty-state">
+                Start a conversation ✨
+              </div>
+            )}
+
+            {currentChat?.messages.map((msg, index) => (
+              <div
+                key={index}
+                className={`message ${msg.role}`}
+              >
+                {msg.content}
+              </div>
+            ))}
+
+            {typing && (
+              <div className="message assistant typing">
+                AI is typing...
+              </div>
+            )}
+
+            <div ref={bottomRef} />
+          </div>
+
+          {/* FOOTER */}
+          <div className="chat-footer">
+            <textarea
+              placeholder="Ask something..."
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) =>
+                e.key === "Enter" && !e.shiftKey && handleSend()
+              }
+            />
+            <button onClick={handleSend}>➤</button>
+          </div>
+        </>
+      )}
+
+      {/* HISTORY VIEW */}
+      {view === "history" && (
+        <div className="history-view">
+          {chats.map((chat) => (
+            <div
+              key={chat.id}
+              className={`history-item ${
+                chat.id === currentChatId ? "active" : ""
+              }`}
+              onClick={() => {
+                setCurrentChatId(chat.id);
+                setView("chat");
+              }}
+                tabIndex={0}
+                role="button"
+            >
+              <span className="history-title">
+                {chat.title}
+              </span>
+              <span
+                className="history-delete"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  deleteChat(chat.id);
+                }}
+                tabIndex={0}
+                role="button"
+              >
+                ✕
+              </span>
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
-};
-
-export default SidePanel;
+}

@@ -50,7 +50,7 @@
     ]
   },
   "src/sidePanel/index.html": {
-    "file": "assets/sidepanel-D_0Mux9b.js",
+    "file": "assets/sidepanel-B8OWCdd6.js",
     "name": "sidepanel",
     "src": "src/sidePanel/index.html",
     "isEntry": true,
@@ -58,7 +58,7 @@
       "_index-CQFZbpCx.js"
     ],
     "css": [
-      "assets/sidepanel-yWprmUrX.css"
+      "assets/sidepanel-DW-6LA79.css"
     ]
   }
 }

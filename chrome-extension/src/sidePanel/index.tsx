@@ -4,7 +4,7 @@ import '../index.css'
 import './sidepanel.css'
 import SidePanel from './sidepanel.tsx'
 
-createRoot(document.getElementById('root')!).render(
+createRoot(document.getElementById('chromeSidePanel')!).render(
   <StrictMode>
     <SidePanel />
   </StrictMode>,
