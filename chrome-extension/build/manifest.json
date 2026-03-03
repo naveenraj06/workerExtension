@@ -25,7 +25,8 @@
     "tabs",
     "sidePanel",
     "storage",
-    "contextMenus"
+    "contextMenus",
+    "bookmarks"
   ],
   "background": {
     "service_worker": "service-worker-loader.js",

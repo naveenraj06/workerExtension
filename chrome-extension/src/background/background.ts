@@ -11,6 +11,11 @@ console.log("Extension installed or updated. Reason:", reason);
     title: "Open side panel",
     contexts: ["all"],
   });
+
+chrome.bookmarks.getRecent(5, (bookmarks) => {
+  console.log("Recent bookmarks:", bookmarks);
+  chrome.storage.local.set({ recentBookmarks: bookmarks });
+});
 });
 
 chrome.contextMenus.onClicked.addListener((info: any, tab: any) => {
@@ -22,14 +27,35 @@ chrome.contextMenus.onClicked.addListener((info: any, tab: any) => {
 });
 
 sessionCallbacks();
+let panelStateByTab: Record<number, boolean> = {};
+
 chrome.commands.onCommand.addListener((command) => {
-  if (command === "open-side-panel") {
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs: any) => {
-      if (tabs.length > 0) {
-        chrome.sidePanel.open({ tabId: tabs[0].id });
-      }
-    });
-  }
+  if (command !== "open-side-panel") return;
+
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    if (!tabs.length || tabs[0].id === undefined) return;
+
+    const tabId = tabs[0].id;
+    const isOpen = panelStateByTab[tabId];
+
+    if (isOpen) {
+      // Close side panel
+      chrome.sidePanel.setOptions({
+        enabled: false,
+      });
+
+      panelStateByTab[tabId] = false;
+    } else {
+      // Enable + Open side panel
+      chrome.sidePanel.setOptions({
+        enabled: true,
+      });
+
+      chrome.sidePanel.open({ tabId });
+
+      panelStateByTab[tabId] = true;
+    }
+  });
 });
 
 chrome.omnibox.onInputStarted.addListener(function () {
@@ -102,3 +128,4 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     console.log("Tab activated:", activeInfo);
     await sidebarHelper(activeInfo.tabId);
 });
+
