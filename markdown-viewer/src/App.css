@@ -9,5 +9,68 @@
 .editor-container, .content-container {
   display: flex;
   height: 100%;
-  padding: 10px;
+}
+
+.error-list {
+  padding: 0.25rem;
+  color: red;
+  font-size: 0.75rem;
+  width: 100%;
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+
+.error-list .error-item {
+  margin-bottom: 0.25rem;
+}
+
+.error-list .no-errors {
+  color: green;
+}
+
+.reactflow-container, .editor-container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+.editor-error-view {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  width: 100%;
+}
+
+.close-editor-error-view {
+  font-size: 0.625rem;
+  cursor: pointer;
+  text-align: right;
+  padding: 0.25rem 0.75rem;
+}
+
+.json-content-container {
+  border-radius: .25rem;
+  overflow: hidden;
+  min-width: 11.25rem
+}
+.json-content-container-wrap {
+    display: flex;
+    flex-direction: row;
+    gap: 0.15rem;
+    padding: 0.25rem;
+    border-bottom: 1px solid #020202;
+    background-color: #2f2f2f;
+    width: 100%;
+    overflow: hidden;
+    color: #efefef;
+    font-size: 0.5rem;
+}
+
+.json-content-container-wrap:last-child {
+  border-bottom: 0
+}
+
+.json-key {
+  color: rgb(2, 139, 243)
 }

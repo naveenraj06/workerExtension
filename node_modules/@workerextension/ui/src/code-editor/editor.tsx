@@ -1,5 +1,5 @@
-import Editor from '@monaco-editor/react';
-import { useRef } from 'react';
+import Editor from "@monaco-editor/react";
+import { useRef } from "react";
 
 interface CodeEditorProps {
   onChange?: (value: string | undefined, event: any) => void;
@@ -16,9 +16,8 @@ const CodeEditor = ({
   onValidate,
   language,
   defaultValue,
-  options
-}: CodeEditorProps ) => {
-
+  options,
+}: CodeEditorProps) => {
   const editorRef = useRef(null);
 
   const handleEditorChange = (value: any, event: any) => {
@@ -27,28 +26,41 @@ const CodeEditor = ({
     if (onChange) {
       onChange(value, event);
     }
-  }
+  };
 
   const handleEditorDidMount = (editor: any, monaco: any) => {
-    console.log('onMount: the editor instance:', editor);
-    console.log('onMount: the monaco instance:', monaco);
+    console.log("onMount: the editor instance:", editor);
+    console.log("onMount: the monaco instance:", monaco);
     editorRef.current = editor;
     if (onMount) {
       onMount(editor, monaco);
     }
-  }
+  };
 
   const handleEditorValidation = (markers: any) => {
     // model markers
     // markers.forEach(marker => console.log('onValidate:', marker.message));
-    console.log(markers);
+    console.log(markers, "editor validation");
     if (onValidate) {
       onValidate(markers);
     }
-    
-  }
+  };
+  console.log("rendering editor with language:", language);
 
-  return <Editor height="100%" width="100%" defaultValue={defaultValue || "// some comment"} onChange={handleEditorChange} onMount={handleEditorDidMount} onValidate={handleEditorValidation} language={language || 'markdown'} defaultLanguage={'Markdown'} options={options} />
-}
+  return (
+    <Editor
+      height="100%"
+      width="100%"
+      defaultValue={defaultValue || "// some comment"}
+      onChange={handleEditorChange}
+      onMount={handleEditorDidMount}
+      onValidate={handleEditorValidation}
+      // language={language}
+      defaultLanguage={ language || "javascript" }
+      options={options}
+      theme="vs-dark"
+    />
+  );
+};
 
-export default CodeEditor
+export default CodeEditor;

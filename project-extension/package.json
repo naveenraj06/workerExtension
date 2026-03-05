@@ -1,5 +1,5 @@
 {
-  "name": "markdown-viewer",
+  "name": "project-extension",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -10,14 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@workerextension/ui": "^0.0.0",
-    "@workerextension/utils": "^1.0.0",
-    "@xyflow/react": "^12.10.1",
-    "dompurify": "^3.3.1",
-    "marked": "^17.0.3",
+    "@originjs/vite-plugin-federation": "^1.4.1",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "react-router": "^7.13.1"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.39.1",

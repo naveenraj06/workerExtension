@@ -1,0 +1,10 @@
+declare module "SMAC/apiClient";
+declare module "SMAC/useAPI";
+declare module "SMAC/ProtectedRoutes";
+declare module "SMAC/Styles";
+declare module "SMAC/ErrorBoundary";
+declare module "SMAC/utils";
+declare module "SMAC/Layout";
+declare module "SMAC/redux-store";
+declare module "SMAC/Preloader";
+declare module "SMAC/NotFound";
