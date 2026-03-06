@@ -23,6 +23,7 @@ const JsonFlow = ({jsonNodes=[], jsonEdges=[], nodeTypes={}, parentNodes=[]}:any
                 x: right + 20,
                 y: bottom + 20,
               },
+              draggable: false
             };
           });
         });
