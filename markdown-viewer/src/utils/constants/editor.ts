@@ -20,3 +20,4 @@ export const editorOptions = {
   formatOnPaste: true,
   formatOnType: true,
 };
+

@@ -54,6 +54,11 @@
   overflow: hidden;
   min-width: 11.25rem
 }
+
+.json-content-container.only-label {
+  min-width: auto;
+}
+
 .json-content-container-wrap {
     display: flex;
     flex-direction: row;
