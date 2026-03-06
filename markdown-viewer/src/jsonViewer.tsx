@@ -29,6 +29,7 @@ const defaultJson = `[{
 const JsonViewer = () => {
   const [jsonContent, setJsonContent] = useState(defaultJson);
   const [errors, setErrors] = useState([]);
+  const [parentNodes, setParentNodes] = useState<any>([])
   const [hasErrror, setHasError] = useState(false);
   const [jsonNodes, setJsonNodes] = useState<any>([]);
   const [jsonEdges, setJsonEdges] = useState<any>([]);
@@ -69,15 +70,21 @@ const JsonViewer = () => {
     jsonContent: JsonContentNode,
   };
 
-  const jsonObjectMapping = (data: any = {}, parent?: string) => {
+  let currentParent = 'root'
+
+  const jsonObjectMapping = (data: any = {}, parent: string = currentParent) => {
+    console.log("🚀 ~ jsonObjectMapping ~ parent:", parent)
     const content = structuredClone(data);
+    setParentNodes((prev:any) => {
+      return [...prev, parent]
+    })
     try {
       if (Array.isArray(content)) {
         setJsonNodes((prev: any) => {
           return [
             ...prev,
             {
-              id: `node-${parent ?? "root"}`,
+              id: `node-${parent}`,
               data: { value: `[${content?.length} items]` },
               position: {
                 x: 0,
@@ -87,8 +94,8 @@ const JsonViewer = () => {
             },
           ];
         });
-        content.forEach((data: any) => {
-          jsonObjectMapping(data, parent);
+        content.forEach((data: any, index:number) => {
+          jsonObjectMapping(data, `${parent}-${index}`);
         });
       } else {
         const schema = { ...content };
@@ -105,7 +112,7 @@ const JsonViewer = () => {
           return [
             ...prev,
             {
-              id: `node-${parent}-${hasNodeId + 1}-${Math.floor(Math.random() * (10 - 1) + 1)}`,
+              id: `node-${parent}-${hasNodeId + 1}`,
               data: {
                 value: schema,
               },
@@ -117,9 +124,9 @@ const JsonViewer = () => {
             },
           ];
         });
-        Object.entries(content).forEach(([key, values]: any) => {
-          if (typeof values === "object" || Array.isArray(values)) {
-            jsonObjectMapping(values, key);
+        Object.entries(content).forEach(([key, values]: any, index:number) => {
+          if (values && (typeof values === "object" || Array.isArray(values))) {
+            jsonObjectMapping(values, `${parent}-${key}`);
           } else {
             console.log("unhandle json", key, values);
           }
@@ -134,6 +141,7 @@ const JsonViewer = () => {
 
   const convertJsonNodes = useCallback(() => {
     setJsonNodes([]);
+    setParentNodes([]);
     try {
       const parsedJson = JSON.parse(jsonContent);
       console.group("conversion started");
@@ -195,6 +203,7 @@ const JsonViewer = () => {
               jsonNodes={jsonNodes}
               jsonEdges={jsonNodes}
               nodeTypes={nodeTypes}
+              parentNodes={parentNodes}
             />
           </ReactFlowProvider>
         </Allotment.Pane>

@@ -1,23 +1,33 @@
 import { Background, BackgroundVariant, Controls, ReactFlow, useEdgesState, useNodesInitialized, useNodesState, useReactFlow } from "@xyflow/react"
 import { useEffect } from "react";
 
-const JsonFlow = ({jsonNodes=[], jsonEdges=[], nodeTypes={}}:any) => {
+const JsonFlow = ({jsonNodes=[], jsonEdges=[], nodeTypes={}, parentNodes=[]}:any) => {
 
-  const [nodes, setNodes, onNodesChange] = useNodesState(jsonNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(jsonEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState<any>(jsonNodes);
+  const [edges, setEdges, onEdgesChange] = useEdgesState<any>(jsonEdges);
   const { getNodes } = useReactFlow();
   const nodesInitialized = useNodesInitialized({
     includeHiddenNodes: false,
   });
   useEffect(() => {
     if(nodesInitialized) {
-        const nodesList = getNodes()
-        nodesList.forEach((node:any, index:number) => {
-            console.log("🚀 ~ JsonFlow ~ node:", node)
-            
-        })
+        setNodes((prev: any) => {
+            let right = 0
+            let bottom = 0
+          return prev.map((node: any, index: number) => {
+            right = index > 0 ? right + prev[index - 1]?.measured?.width : right
+            bottom =  index > 0 ? bottom + prev[index - 1]?.measured?.height : bottom
+            return {
+              ...node,
+              position: {
+                x: right + 20,
+                y: bottom + 20,
+              },
+            };
+          });
+        });
     }
-  }, [nodesInitialized]);
+  }, [nodesInitialized, parentNodes]);
 
 useEffect(() => {
     setNodes(jsonNodes ?? [])
