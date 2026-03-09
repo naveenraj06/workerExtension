@@ -17,6 +17,8 @@
     "project-extension"
   ],
   "dependencies": {
-    "allotment": "^1.20.5"
+    "@tailwindcss/vite": "^4.2.1",
+    "allotment": "^1.20.5",
+    "tailwindcss": "^4.2.1"
   }
 }

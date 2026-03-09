@@ -1,11 +1,10 @@
-import { Background, BackgroundVariant, Controls, ReactFlow, useEdgesState, useNodesInitialized, useNodesState, useReactFlow } from "@xyflow/react"
+import { Background, BackgroundVariant, Controls, ReactFlow, useEdgesState, useNodesInitialized, useNodesState } from "@xyflow/react"
 import { useEffect } from "react";
 
 const JsonFlow = ({jsonNodes=[], jsonEdges=[], nodeTypes={}, parentNodes=[]}:any) => {
 
   const [nodes, setNodes, onNodesChange] = useNodesState<any>(jsonNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState<any>(jsonEdges);
-  const { getNodes } = useReactFlow();
   const nodesInitialized = useNodesInitialized({
     includeHiddenNodes: false,
   });
@@ -15,6 +14,8 @@ const JsonFlow = ({jsonNodes=[], jsonEdges=[], nodeTypes={}, parentNodes=[]}:any
             let right = 0
             let bottom = 0
           return prev.map((node: any, index: number) => {
+            let routeMap = node.id.replace('node-', '').split('-')
+            console.log("🚀 ~ JsonFlow ~ routeMap:", routeMap)
             right = index > 0 ? right + prev[index - 1]?.measured?.width : right
             bottom =  index > 0 ? bottom + prev[index - 1]?.measured?.height : bottom
             return {

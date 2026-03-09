@@ -29,7 +29,7 @@ const defaultJson = `[{
 const JsonViewer = () => {
   const [jsonContent, setJsonContent] = useState(defaultJson);
   const [errors, setErrors] = useState([]);
-  const [parentNodes, setParentNodes] = useState<any>([])
+  const [parentNodes, setParentNodes] = useState<any>([]);
   const [hasErrror, setHasError] = useState(false);
   const [jsonNodes, setJsonNodes] = useState<any>([]);
   const [jsonEdges, setJsonEdges] = useState<any>([]);
@@ -70,31 +70,35 @@ const JsonViewer = () => {
     jsonContent: JsonContentNode,
   };
 
-  let currentParent = 'root'
+  let currentParent = "root";
 
-  const jsonObjectMapping = (data: any = {}, parent: string = currentParent) => {
-    console.log("🚀 ~ jsonObjectMapping ~ parent:", parent)
+  const jsonObjectMapping = (
+    data: any = {},
+    parent: string = currentParent,
+  ) => {
     const content = structuredClone(data);
-    setParentNodes((prev:any) => {
-      return [...prev, parent]
-    })
+    setParentNodes((prev: any) => {
+      return [...prev, parent];
+    });
     try {
       if (Array.isArray(content)) {
-        setJsonNodes((prev: any) => {
-          return [
-            ...prev,
-            {
-              id: `node-${parent}`,
-              data: { value: `[${content?.length} items]` },
-              position: {
-                x: 0,
-                y: 0,
+        if (parent === "root") {
+          setJsonNodes((prev: any) => {
+            return [
+              ...prev,
+              {
+                id: `node-${parent}`,
+                data: { value: `[${content?.length} items]` },
+                position: {
+                  x: 0,
+                  y: 0,
+                },
+                type: "jsonContent",
               },
-              type: "jsonContent",
-            },
-          ];
-        });
-        content.forEach((data: any, index:number) => {
+            ];
+          });
+        }
+        content.forEach((data: any, index: number) => {
           jsonObjectMapping(data, `${parent}-${index}`);
         });
       } else {
@@ -124,7 +128,7 @@ const JsonViewer = () => {
             },
           ];
         });
-        Object.entries(content).forEach(([key, values]: any, index:number) => {
+        Object.entries(content).forEach(([key, values]: any) => {
           if (values && (typeof values === "object" || Array.isArray(values))) {
             jsonObjectMapping(values, `${parent}-${key}`);
           } else {
@@ -134,8 +138,7 @@ const JsonViewer = () => {
       }
     } catch (error) {
       console.error("error in mapping json", error);
-      console.error('error content', content, parent)
-      
+      console.error("error content", content, parent);
     }
   };
 
