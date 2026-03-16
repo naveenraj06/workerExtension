@@ -1,6 +1,8 @@
 import Home from "./App";
 import Viewer from "./viewer";
 import JsonViewer from "./jsonViewer";
+import { ChartExample } from "./chartsView";
+import { chartView } from "./utils/constants";
 
 const router = [
   {
@@ -10,8 +12,12 @@ const router = [
     path: "/viewer",
     Component: Viewer,
   }, {
-    path: "json-viewer",
+    path: "/json-viewer",
     Component: JsonViewer
+  }, {
+    path: 'chart-view',
+    Component: ChartExample,
+    loader: chartView
   }
 ]
 
